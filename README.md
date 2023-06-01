@@ -1,0 +1,1 @@
+# Muflone.Transport.RabbitMQ.Saga
