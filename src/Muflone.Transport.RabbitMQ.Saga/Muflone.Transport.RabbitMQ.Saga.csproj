@@ -1,17 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Title>Mulfone Transport RabbitMQ Saga</Title>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Alessandro Colla - Alberto Acerbis</Authors>
+    <Description>Muflone saga implementation for RabbitMQ</Description>
+    <PackageIcon>Logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/CQRS-Muflone/Muflone.Transport.RabbitMQ.Saga</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CQRS-Muflone/Muflone.Transport.RabbitMQ.Saga</RepositoryUrl>
+    <PackageTags>Broker, RabbitMQ, CQRS, Saga, Event Sourcing</PackageTags>
+    <Version>6.2.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Muflone.Saga" Version="6.2.0" />
+    <None Include="..\..\..\Logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Muflone.Transport.RabbitMQ\src\Muflone.Transport.RabbitMQ\Muflone.Transport.RabbitMQ.csproj" />
+    <PackageReference Include="Muflone.Saga" Version="6.2.0" />
+    <PackageReference Include="Muflone.Transport.RabbitMQ" Version="6.2.0" />
   </ItemGroup>
-
 </Project>
