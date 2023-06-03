@@ -8,7 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="Muflone.Saga" Version="6.2.0" />
-    <PackageReference Include="Muflone.Transport.RabbitMQ" Version="6.1.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Muflone.Transport.RabbitMQ\src\Muflone.Transport.RabbitMQ\Muflone.Transport.RabbitMQ.csproj" />
   </ItemGroup>
 
 </Project>
