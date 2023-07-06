@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Muflone.Messages;
 using Muflone.Messages.Commands;
 using Muflone.Persistence;
@@ -9,6 +8,7 @@ using Muflone.Transport.RabbitMQ.Models;
 using Muflone.Transport.RabbitMQ.Saga.Abstracts;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
 
 namespace Muflone.Transport.RabbitMQ.Saga.Consumers;
 
@@ -24,7 +24,7 @@ public abstract class SagaStartedByConsumerBase<T> : ConsumerBase, ISagaStartedB
 	/// <summary>
 	/// For now just as a proxy to pass directly to the Handler this class is wrapping
 	/// </summary>
-	protected IRepository Repository { get; }
+	protected IRepository Repository { get; } = default!;
 
 	protected SagaStartedByConsumerBase(IRepository repository, IMufloneConnectionFactory connectionFactory,
 		ILoggerFactory loggerFactory)
@@ -37,6 +37,25 @@ public abstract class SagaStartedByConsumerBase<T> : ConsumerBase, ISagaStartedB
 		: base(loggerFactory)
 	{
 		Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+		_connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+		_messageSerializer = new Serializer();
+
+		if (string.IsNullOrWhiteSpace(configuration.ResourceKey))
+			configuration.ResourceKey = typeof(T).Name;
+
+		if (string.IsNullOrWhiteSpace(configuration.QueueName))
+		{
+			configuration.QueueName = GetType().Name;
+			if (configuration.QueueName.EndsWith("Consumer", StringComparison.InvariantCultureIgnoreCase))
+				configuration.QueueName = configuration.QueueName.Substring(0, configuration.QueueName.Length - "Consumer".Length);
+		}
+		_configuration = configuration;
+	}
+
+	protected SagaStartedByConsumerBase(ConsumerConfiguration configuration,
+		IMufloneConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
+		: base(loggerFactory)
+	{
 		_connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
 		_messageSerializer = new Serializer();
 
