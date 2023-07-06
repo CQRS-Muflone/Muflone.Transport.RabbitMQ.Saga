@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/CQRS-Muflone/Muflone.Transport.RabbitMQ.Saga</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CQRS-Muflone/Muflone.Transport.RabbitMQ.Saga</RepositoryUrl>
     <PackageTags>Broker, RabbitMQ, CQRS, Saga, Event Sourcing</PackageTags>
-    <Version>6.2.0</Version>
+    <Version>6.2.1</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
