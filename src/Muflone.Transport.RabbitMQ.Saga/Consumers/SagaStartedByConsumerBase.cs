@@ -4,6 +4,7 @@ using Muflone.Messages.Commands;
 using Muflone.Persistence;
 using Muflone.Saga;
 using Muflone.Transport.RabbitMQ.Abstracts;
+using Muflone.Transport.RabbitMQ.Consumers;
 using Muflone.Transport.RabbitMQ.Models;
 using Muflone.Transport.RabbitMQ.Saga.Abstracts;
 using RabbitMQ.Client;
@@ -17,8 +18,8 @@ public abstract class SagaStartedByConsumerBase<T> : ConsumerBase, ISagaStartedB
 {
 	private readonly ISerializer _messageSerializer;
 	private readonly ConsumerConfiguration _configuration;
-	private readonly IMufloneConnectionFactory _connectionFactory;
-	private IModel _channel;
+	private readonly IRabbitMQConnectionFactory _connectionFactory;
+	private IModel _channel = default!;
 	protected abstract ISagaStartedByAsync<T> HandlerAsync { get; }
 
 	/// <summary>
@@ -26,14 +27,14 @@ public abstract class SagaStartedByConsumerBase<T> : ConsumerBase, ISagaStartedB
 	/// </summary>
 	protected IRepository Repository { get; } = default!;
 
-	protected SagaStartedByConsumerBase(IRepository repository, IMufloneConnectionFactory connectionFactory,
+	protected SagaStartedByConsumerBase(IRepository repository, IRabbitMQConnectionFactory connectionFactory,
 		ILoggerFactory loggerFactory)
 		: this(new ConsumerConfiguration(), repository, connectionFactory, loggerFactory)
 	{
 	}
 
 	protected SagaStartedByConsumerBase(ConsumerConfiguration configuration, IRepository repository,
-		IMufloneConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
+		IRabbitMQConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
 		: base(loggerFactory)
 	{
 		Repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -53,7 +54,7 @@ public abstract class SagaStartedByConsumerBase<T> : ConsumerBase, ISagaStartedB
 	}
 
 	protected SagaStartedByConsumerBase(ConsumerConfiguration configuration,
-		IMufloneConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
+		IRabbitMQConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
 		: base(loggerFactory)
 	{
 		_connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
@@ -115,10 +116,9 @@ public abstract class SagaStartedByConsumerBase<T> : ConsumerBase, ISagaStartedB
 			_channel.Close();
 
 		_channel.Dispose();
-		_channel = null;
 	}
 
-	private void OnChannelException(object _, CallbackExceptionEventArgs ea)
+	private void OnChannelException(object? sender, CallbackExceptionEventArgs ea)
 	{
 		Logger.LogError(ea.Exception, $"RabbitMQ Channel has encountered an error: {ea.Exception.Message}");
 
@@ -142,8 +142,8 @@ public abstract class SagaStartedByConsumerBase<T> : ConsumerBase, ISagaStartedB
 		Command command;
 		try
 		{
-			command = await _messageSerializer.DeserializeAsync<T>(Encoding.ASCII.GetString(eventArgs.Body.ToArray()),
-				CancellationToken.None);
+			var deserializedMessage = await _messageSerializer.DeserializeAsync<T>(Encoding.ASCII.GetString(eventArgs.Body.ToArray()), CancellationToken.None) ?? throw new InvalidOperationException("Deserialized message cannot be null.");
+			command = deserializedMessage;
 		}
 		catch (Exception ex)
 		{
