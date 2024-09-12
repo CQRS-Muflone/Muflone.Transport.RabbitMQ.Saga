@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>Mulfone Transport RabbitMQ Saga</Title>
@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/CQRS-Muflone/Muflone.Transport.RabbitMQ.Saga</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CQRS-Muflone/Muflone.Transport.RabbitMQ.Saga</RepositoryUrl>
     <PackageTags>Broker, RabbitMQ, CQRS, Saga, Event Sourcing</PackageTags>
-    <Version>6.2.1</Version>
+    <Version>8.0.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
@@ -31,6 +31,6 @@
 
   <ItemGroup>
     <PackageReference Include="Muflone.Saga" Version="6.2.0" />
-    <PackageReference Include="Muflone.Transport.RabbitMQ" Version="6.2.0" />
+    <PackageReference Include="Muflone.Transport.RabbitMQ" Version="8.1.1" />
   </ItemGroup>
 </Project>

@@ -1,14 +1,15 @@
-﻿using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Muflone.Messages;
 using Muflone.Messages.Events;
 using Muflone.Persistence;
 using Muflone.Saga;
 using Muflone.Transport.RabbitMQ.Abstracts;
+using Muflone.Transport.RabbitMQ.Consumers;
 using Muflone.Transport.RabbitMQ.Models;
 using Muflone.Transport.RabbitMQ.Saga.Abstracts;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
 
 namespace Muflone.Transport.RabbitMQ.Saga.Consumers;
 
@@ -17,16 +18,16 @@ public abstract class SagaEventConsumerBase<T> : ConsumerBase, ISagaEventConsume
 {
 	private readonly ISerializer _messageSerializer;
 	private readonly ConsumerConfiguration _configuration;
-	private readonly IMufloneConnectionFactory _connectionFactory;
-	private IModel _channel;
+	private readonly IRabbitMQConnectionFactory _connectionFactory;
+	private IModel _channel = default!;
 	protected abstract ISagaEventHandlerAsync<T> HandlerAsync { get; }
 
-	protected SagaEventConsumerBase(IMufloneConnectionFactory mufloneConnectionFactory, ILoggerFactory loggerFactory)
-		: this(new ConsumerConfiguration(), mufloneConnectionFactory, loggerFactory)
+	protected SagaEventConsumerBase(IRabbitMQConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
+		: this(new ConsumerConfiguration(), connectionFactory, loggerFactory)
 	{
 	}
 
-	protected SagaEventConsumerBase(ConsumerConfiguration configuration, IMufloneConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
+	protected SagaEventConsumerBase(ConsumerConfiguration configuration, IRabbitMQConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
 		: base(loggerFactory)
 	{
 		_connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
@@ -84,10 +85,9 @@ public abstract class SagaEventConsumerBase<T> : ConsumerBase, ISagaEventConsume
 			_channel.Close();
 
 		_channel.Dispose();
-		_channel = null;
 	}
 
-	private void OnChannelException(object _, CallbackExceptionEventArgs ea)
+	private void OnChannelException(object? sender, CallbackExceptionEventArgs ea)
 	{
 		Logger.LogError(ea.Exception, $"The RabbitMQ Channel has encountered an error: {ea.Exception.Message}");
 
@@ -113,7 +113,8 @@ public abstract class SagaEventConsumerBase<T> : ConsumerBase, ISagaEventConsume
 		Event message;
 		try
 		{
-			message = await _messageSerializer.DeserializeAsync<T>(Encoding.ASCII.GetString(eventArgs.Body.ToArray()), CancellationToken.None);
+			var deserializedMessage = await _messageSerializer.DeserializeAsync<T>(Encoding.ASCII.GetString(eventArgs.Body.ToArray()), CancellationToken.None) ?? throw new InvalidOperationException("Deserialized message cannot be null.");
+			message = deserializedMessage;
 		}
 		catch (Exception ex)
 		{
