@@ -10,6 +10,7 @@ using Muflone.Transport.RabbitMQ.Saga.Abstracts;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using Muflone.Saga.Persistence;
 
 namespace Muflone.Transport.RabbitMQ.Saga.Consumers;
 
@@ -25,15 +26,15 @@ public abstract class SagaStartedByConsumerBase<T> : ConsumerBase, ISagaStartedB
 	/// <summary>
 	/// For now just as a proxy to pass directly to the Handler this class is wrapping
 	/// </summary>
-	protected IRepository Repository { get; } = default!;
+	protected ISagaRepository Repository { get; } = default!;
 
-	protected SagaStartedByConsumerBase(IRepository repository, IRabbitMQConnectionFactory connectionFactory,
+	protected SagaStartedByConsumerBase(ISagaRepository repository, IRabbitMQConnectionFactory connectionFactory,
 		ILoggerFactory loggerFactory)
 		: this(new ConsumerConfiguration(), repository, connectionFactory, loggerFactory)
 	{
 	}
 
-	protected SagaStartedByConsumerBase(ConsumerConfiguration configuration, IRepository repository,
+	protected SagaStartedByConsumerBase(ConsumerConfiguration configuration, ISagaRepository repository,
 		IRabbitMQConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
 		: base(loggerFactory)
 	{

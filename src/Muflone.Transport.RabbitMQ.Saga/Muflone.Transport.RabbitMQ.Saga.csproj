@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/CQRS-Muflone/Muflone.Transport.RabbitMQ.Saga</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CQRS-Muflone/Muflone.Transport.RabbitMQ.Saga</RepositoryUrl>
     <PackageTags>Broker, RabbitMQ, CQRS, Saga, Event Sourcing</PackageTags>
-    <Version>8.0.0</Version>
+    <Version>8.0.1</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Muflone.Saga" Version="6.2.0" />
+    <PackageReference Include="Muflone.Saga" Version="8.1.1" />
     <PackageReference Include="Muflone.Transport.RabbitMQ" Version="8.1.1" />
   </ItemGroup>
 </Project>
